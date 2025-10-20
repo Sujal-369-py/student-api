@@ -33,11 +33,5 @@ async def insert_student(user_data: User):
         raise HTTPException(status_code=409, detail="Student ID already exists")
     await db.insert_one(user)
     return {"message": "Student created successfully"}
-@app.get("/test-mongo")
-async def test_mongo():
-    try:
-        await db.find_one({})
-        return {"status": "connected"}
-    except Exception as e:
-        return {"status": "failed", "error": str(e)}
+
 

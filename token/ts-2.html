@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MyApp | Auth & Dashboard</title>
+  <style>
+    /* ----- Global Styles ----- */
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #f0f2f5;
+      margin: 0;
+      padding: 0;
+    }
+
+    header {
+      background-color: #007BFF;
+      color: white;
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    main {
+      padding: 2rem;
+    }
+
+    /* ----- Auth Container ----- */
+    .auth-container {
+      width: 350px;
+      margin: 100px auto;
+      padding: 2rem;
+      background: white;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      border-radius: 10px;
+      text-align: center;
+      display: none; /* Initially hidden, show via JS */
+    }
+
+    .auth-container.active {
+      display: block;
+    }
+
+    .auth-container h2 {
+      margin-bottom: 1rem;
+    }
+
+    .auth-container input,
+    .auth-container select,
+    .auth-container button {
+      width: 100%;
+      padding: 0.8rem;
+      margin: 0.5rem 0;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+    }
+
+    .auth-container button {
+      background-color: #007BFF;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+
+    .auth-container button:hover {
+      background-color: #0056b3;
+    }
+
+    .auth-container p {
+      margin-top: 1rem;
+    }
+
+    .auth-container a {
+      color: #007BFF;
+      text-decoration: none;
+    }
+
+    .auth-container a:hover {
+      text-decoration: underline;
+    }
+
+    /* ----- Dashboard ----- */
+    #dashboard {
+      display: none; /* Hidden until login */
+    }
+
+    #dashboard p {
+      font-size: 1.1rem;
+    }
+
+    #logoutBtn {
+      background-color: #FF4B5C;
+      padding: 0.5rem 1rem;
+      border-radius: 5px;
+      border: none;
+      color: white;
+      cursor: pointer;
+    }
+
+    #logoutBtn:hover {
+      background-color: #c43d4c;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <header>
+    <h1>MyApp</h1>
+    <button id="logoutBtn" style="display:none;">Logout</button>
+  </header>
+
+  <main>
+    <!-- Login Form -->
+    <div class="auth-container" id="loginFormContainer">
+      <h2>Login</h2>
+      <form id="loginForm">
+        <input type="text" name="username" placeholder="Username" required>
+        <input type="password" name="password" placeholder="Password" required>
+        <button type="submit">Login</button>
+      </form>
+      <p>Don't have an account? <a href="#" id="showRegister">Register</a></p>
+    </div>
+
+    <!-- Registration Form -->
+    <div class="auth-container" id="registerFormContainer" action="/Register-user" method="post">
+      <h2>Register</h2>
+      <form id="registerForm">
+        <input type="text" name="username" placeholder="Username" required>
+        <input type="password" name="password" placeholder="Password" required>
+        <input type="number" name="age" placeholder="Age" required>
+        <select name="gender" required>
+          <option value="">Select Gender</option>
+          <option value="male">Male</option>
+          <option value="female">Female</option>
+          <option value="other">Other</option>
+        </select>
+        <button type="submit">Register</button>
+      </form>
+      <p>Already have an account? <a href="#" id="showLogin">Login</a></p>
+    </div>
+
+    <!-- Dashboard -->
+    <div id="dashboard">
+      <h2>Welcome, <span id="usernameDisplay"></span>!</h2>
+      <p>This is your dashboard. Secure content goes here.</p>
+    </div>
+  </main>
+
+  <!-- JS -->
+  <script>
+    const apiBase = "http://localhost:8000"; // Change to your backend URL
+
+    // Elements
+    const loginFormContainer = document.getElementById("loginFormContainer");
+    const registerFormContainer = document.getElementById("registerFormContainer");
+    const dashboard = document.getElementById("dashboard");
+    const usernameDisplay = document.getElementById("usernameDisplay");
+    const logoutBtn = document.getElementById("logoutBtn");
+
+    // Show login/register forms
+    document.getElementById("showRegister").addEventListener("click", () => {
+      loginFormContainer.classList.remove("active");
+      registerFormContainer.classList.add("active");
+    });
+
+    document.getElementById("showLogin").addEventListener("click", () => {
+      registerFormContainer.classList.remove("active");
+      loginFormContainer.classList.add("active");
+    });
+
+    // Initially show login
+    loginFormContainer.classList.add("active");
+
+    // Registration
+    const registerForm = document.getElementById("registerForm");
+    registerForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const formData = new FormData(registerForm);
+      const data = Object.fromEntries(formData.entries());
+      const res = await fetch(`${apiBase}/Register-user`, {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify(data)
+      });
+      const result = await res.json();
+      alert(result.message || result.detail);
+      if(res.ok){
+        registerForm.reset();
+        registerFormContainer.classList.remove("active");
+        loginFormContainer.classList.add("active");
+      }
+    });
+
+    // Login
+    const loginForm = document.getElementById("loginForm");
+    loginForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const formData = new FormData(loginForm);
+      const data = Object.fromEntries(formData.entries());
+      const res = await fetch(`${apiBase}/get-token?user_name=${data.username}&user_pass=${data.password}`);
+      const result = await res.json();
+      if(res.ok){
+        const token = result.Message.split(": ")[1];
+        localStorage.setItem("token", token);
+        localStorage.setItem("username", data.username);
+        showDashboard();
+      } else {
+        alert(result.detail || "Login failed");
+      }
+    });
+
+    // Show Dashboard
+    function showDashboard() {
+      const username = localStorage.getItem("username");
+      usernameDisplay.textContent = username;
+      loginFormContainer.classList.remove("active");
+      registerFormContainer.classList.remove("active");
+      dashboard.style.display = "block";
+      logoutBtn.style.display = "inline-block";
+    }
+
+    // Logout
+    logoutBtn.addEventListener("click", () => {
+      localStorage.removeItem("token");
+      localStorage.removeItem("username");
+      dashboard.style.display = "none";
+      logoutBtn.style.display = "none";
+      loginFormContainer.classList.add("active");
+    });
+
+    // Auto-login if token exists
+    if(localStorage.getItem("token")) showDashboard();
+  </script>
+</body>
+</html>

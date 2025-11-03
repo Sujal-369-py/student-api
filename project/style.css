@@ -1,0 +1,88 @@
+/* Base Styles */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: #1f1f2e; /* Dark purple/blue background */
+    margin: 0;
+    padding: 0;
+    color: #f0f0f5; /* light text for contrast */
+}
+
+/* Container */
+.container {
+    max-width: 700px;
+    margin: 50px auto;
+    padding: 30px;
+    background: #2a2a3d; /* slightly lighter card color */
+    border-radius: 12px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+}
+
+/* Headings */
+h1 {
+    text-align: center;
+    color: #ffffff;
+    margin-bottom: 20px;
+}
+h2 {
+    color: #ccccff;
+    margin-bottom: 10px;
+}
+
+/* Inputs */
+input {
+    display: block;
+    width: 100%;
+    margin: 10px 0;
+    padding: 12px 15px;
+    font-size: 16px;
+    border: 1px solid #555;
+    border-radius: 8px;
+    background: #1f1f2e;
+    color: #f0f0f5;
+    transition: 0.2s;
+}
+input:focus {
+    border-color: #8ab6ff;
+    outline: none;
+    box-shadow: 0 0 5px rgba(138, 182, 255, 0.5);
+}
+
+/* Buttons */
+button {
+    padding: 12px 25px;
+    margin: 5px 3px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: 600;
+    border: none;
+    border-radius: 8px;
+    background: #8ab6ff;
+    color: #1f1f2e;
+    transition: 0.3s;
+}
+button:hover {
+    background: #5f8cff;
+    color: #ffffff;
+}
+
+/* Result Box */
+#result {
+    margin-top: 25px;
+    background: #1f1f2e;
+    padding: 20px;
+    border-radius: 10px;
+    min-height: 60px;
+    border-left: 4px solid #8ab6ff;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    font-family: monospace;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    color: #f0f0f5;
+}
+
+/* Form Section */
+.form-section {
+    margin-bottom: 30px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #444;
+}

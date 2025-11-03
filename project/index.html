@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Student Management</title>
+    <link rel="stylesheet" href="/static/style.css">
+
+</head>
+<body>
+    <div class="container">
+        <h1>Student Management</h1>
+
+        <div class="form-section">
+            <h2>Add / Update Student</h2>
+            <input type="text" id="name" placeholder="Name">
+            <input type="number" id="age" placeholder="Age">
+            <input type="number" step="0.01" id="gpa" placeholder="GPA">
+            <button onclick="addStudent()">Add Student</button>
+            <button onclick="updateStudent()">Update Student</button>
+        </div>
+
+        <div class="form-section">
+            <h2>Find / Delete Student</h2>
+            <input type="text" id="search_name" placeholder="Name">
+            <button onclick="findStudent()">Find Student</button>
+            <button onclick="deleteStudent()">Delete Student</button>
+        </div>
+
+        <div id="result"></div>
+    </div>
+
+<script>
+async function addStudent() {
+    const name = document.getElementById('name').value;
+    const age = parseInt(document.getElementById('age').value);
+    const gpa = parseFloat(document.getElementById('gpa').value);
+
+    const res = await fetch(`/students/${name}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ Age: age, Gpa: gpa })
+    });
+    const data = await res.json();
+    document.getElementById('result').innerText = JSON.stringify(data);
+}
+
+async function updateStudent() {
+    const name = document.getElementById('name').value;
+    const age = document.getElementById('age').value;
+    const gpa = document.getElementById('gpa').value;
+
+    const body = {};
+    if(age) body.age = parseInt(age);
+    if(gpa) body.gpa = parseFloat(gpa);
+
+    const res = await fetch(`/students/${name}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body)
+    });
+    const data = await res.json();
+    document.getElementById('result').innerText = JSON.stringify(data);
+}
+
+async function findStudent() {
+    const name = document.getElementById('search_name').value;
+    const res = await fetch(`/students/${name}`);
+    const data = await res.json();
+    document.getElementById('result').innerText = JSON.stringify(data);
+}
+
+async function deleteStudent() {
+    const name = document.getElementById('search_name').value;
+    const res = await fetch(`/students/${name}`, { method: 'DELETE' });
+    const data = await res.json();
+    document.getElementById('result').innerText = JSON.stringify(data);
+}
+</script>
+</body>
+</html>

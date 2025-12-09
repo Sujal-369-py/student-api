@@ -33,5 +33,6 @@ async def insert_student(user_data: User):
         raise HTTPException(status_code=409, detail="Student ID already exists")
     await db.insert_one(user)
     return {"message": "Student created successfully"}
+@app.delete("/delete-student")
 
 
